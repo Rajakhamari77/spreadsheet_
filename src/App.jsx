@@ -17,14 +17,13 @@ import {
 } from "lucide-react"
 
 const SpreadsheetApp = () => {
-  // selectedCell: [rowIndex, visibleColIndex] where visibleColIndex includes the # column (0-indexed)
+  
   const [selectedCell, setSelectedCell] = useState(null)
   const [activeTab, setActiveTab] = useState("Q3 Financial Overview")
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" })
   const [showFilters, setShowFilters] = useState(false)
   const [selectedRows, setSelectedRows] = useState(new Set())
   const [isEditing, setIsEditing] = useState(false)
-  // editingCell: [rowIndex, visibleColIndex]
   const [editingCell, setEditingCell] = useState(null)
   const tableRef = useRef(null)
 
@@ -98,9 +97,9 @@ const SpreadsheetApp = () => {
     { id: "extract", name: "Extract", color: "bg-orange-100 text-orange-700" },
   ]
 
-  // Column definitions for data columns (excluding the row number column)
+  
   const columns = [
-    { key: "jobRequest", label: "Job Request", width: "w-[320px]" }, // Adjusted width
+    { key: "jobRequest", label: "Job Request", width: "w-[320px]" }, 
     { key: "submitted", label: "Submitted", width: "w-[128px]" },
     { key: "status", label: "Status", width: "w-[128px]" },
     { key: "submitter", label: "Submitter", width: "w-[144px]" },
@@ -111,8 +110,8 @@ const SpreadsheetApp = () => {
     { key: "estValue", label: "Est. Value", width: "w-[112px]" },
   ]
 
-  // Calculate total visible columns, including the # column
-  const totalVisibleColumns = columns.length + 1 // +1 for the # column
+  
+  const totalVisibleColumns = columns.length + 1 
 
   const getStatusColor = (status) => {
     switch (status.toLowerCase()) {
@@ -142,22 +141,22 @@ const SpreadsheetApp = () => {
     }
   }
 
-  // Handle cell click (selection)
+  
   const handleCellClick = useCallback((rowIndex, visibleColIndex) => {
     setSelectedCell([rowIndex, visibleColIndex])
-    setIsEditing(false) // Exit editing mode when a new cell is selected
+    setIsEditing(false) 
     setEditingCell(null)
     console.log(`Cell clicked: Row ${rowIndex}, Column ${visibleColIndex}`)
   }, [])
 
-  // Handle cell double click (start editing)
+  
   const handleCellDoubleClick = useCallback((rowIndex, visibleColIndex) => {
     setEditingCell([rowIndex, visibleColIndex])
     setIsEditing(true)
     console.log(`Cell double-clicked for editing: Row ${rowIndex}, Column ${visibleColIndex}`)
   }, [])
 
-  // Handle column sorting
+  
   const handleSort = useCallback((key) => {
     let direction = "asc"
     if (sortConfig.key === key && sortConfig.direction === "asc") {
@@ -167,7 +166,7 @@ const SpreadsheetApp = () => {
     console.log(`Sorting by ${key} in ${direction} order`)
   }, [sortConfig])
 
-  // Handle row selection (checkbox)
+  
   const handleRowSelection = useCallback((rowId) => {
     const newSelected = new Set(selectedRows)
     if (newSelected.has(rowId)) {
@@ -179,11 +178,11 @@ const SpreadsheetApp = () => {
     console.log(`Row ${rowId} selection toggled`)
   }, [selectedRows])
 
-  // Keyboard navigation
+  
   const handleKeyDown = useCallback((e) => {
     if (!selectedCell) return
 
-    const [row, col] = selectedCell // col is visibleColIndex (0 to totalVisibleColumns - 1)
+    const [row, col] = selectedCell 
     let newRow = row
     let newCol = col
 
@@ -193,7 +192,7 @@ const SpreadsheetApp = () => {
         e.preventDefault()
         break
       case "ArrowDown":
-        newRow = Math.min(data.length - 1 + 10, row + 1) // Allow navigation into empty rows, 10 empty rows
+        newRow = Math.min(data.length - 1 + 10, row + 1) 
         e.preventDefault()
         break
       case "ArrowLeft":
@@ -225,10 +224,10 @@ const SpreadsheetApp = () => {
         return
     }
 
-    // Only update selectedCell if a new valid cell is found
+    
     if (newRow !== row || newCol !== col) {
       setSelectedCell([newRow, newCol])
-      setIsEditing(false) // Exit editing mode on navigation
+      setIsEditing(false) 
       setEditingCell(null)
     }
   }, [selectedCell, isEditing, data.length, totalVisibleColumns])
@@ -238,9 +237,9 @@ const SpreadsheetApp = () => {
     return () => window.removeEventListener("keydown", handleKeyDown)
   }, [handleKeyDown])
 
-  // Render function for individual cells
+  
   const renderCell = (item, column, rowIndex, colIndex) => {
-    // visibleColIndex is 1-indexed here because the first column is the checkbox/row number
+    
     const visibleColIndex = colIndex + 1
     const isSelected = selectedCell && selectedCell[0] === rowIndex && selectedCell[1] === visibleColIndex
     const isEditingThis = editingCell && editingCell[0] === rowIndex && editingCell[1] === visibleColIndex && isEditing
@@ -281,7 +280,7 @@ const SpreadsheetApp = () => {
         key={column.key}
         className={`${column.width} px-3 py-2 border-r border-gray-200 cursor-cell relative transition-all duration-150 ${
           isSelected ? "ring-2 ring-blue-400 bg-blue-50 shadow-sm z-10" : "hover:bg-gray-50"
-        } ${isEditingThis ? "bg-white" : ""}`} // Ensure editing cell is white
+        } ${isEditingThis ? "bg-white" : ""}`} 
         onClick={() => handleCellClick(rowIndex, visibleColIndex)}
         onDoubleClick={() => handleCellDoubleClick(rowIndex, visibleColIndex)}
       >
@@ -309,14 +308,14 @@ const SpreadsheetApp = () => {
     )
   }
 
-  // Common button styles for toolbar actions
+  
   const toolbarButtonClass = "flex items-center space-x-1 px-3 py-1.5 text-sm rounded-md border transition-all duration-200"
   const toolbarButtonDefault = `${toolbarButtonClass} text-gray-700 border-gray-200 hover:bg-gray-50 hover:border-gray-300 active:bg-gray-100`
   const toolbarButtonActive = `${toolbarButtonClass} bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100`
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col font-sans text-gray-900">
-      {/* Header */}
+      
       <div className="bg-white border-b border-gray-200 px-4 py-2 sticky top-0 z-20 shadow-sm">
         <div className="flex items-center justify-between h-12">
           <div className="flex items-center space-x-3">
@@ -368,7 +367,7 @@ const SpreadsheetApp = () => {
         </div>
       </div>
 
-      {/* Toolbar */}
+     
       <div className="bg-white border-b border-gray-200 px-4 py-2 sticky top-12 z-10 shadow-sm">
         <div className="flex items-center justify-between h-10">
           <div className="flex items-center space-x-3">
@@ -449,10 +448,10 @@ const SpreadsheetApp = () => {
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="bg-white border-b border-gray-200 px-4 py-0 sticky top-22 z-10"> {/* Adjusted top for stickiness below toolbar */}
-        <div className="flex items-center space-x-0 -mb-px"> {/* -mb-px to align border-b */}
-          <div className="flex items-center space-x-1"> {/* Group for "Q3 Financial Overview" tab and dropdown */}
+    
+      <div className="bg-white border-b border-gray-200 px-4 py-0 sticky top-22 z-10"> 
+        <div className="flex items-center space-x-0 -mb-px"> 
+          <div className="flex items-center space-x-1"> 
             <span className="text-sm font-semibold text-gray-900 px-4 py-2">Q3 Financial Overview</span>
             <button
               onClick={() => console.log("Q3 Financial Overview dropdown clicked")}
@@ -461,9 +460,9 @@ const SpreadsheetApp = () => {
               <ChevronDown className="w-4 h-4 text-gray-400" />
             </button>
           </div>
-          <div className="h-6 w-px bg-gray-200 mx-2"></div> {/* Vertical separator */}
+          <div className="h-6 w-px bg-gray-200 mx-2"></div> 
 
-          {tabs.filter(tab => tab.id !== "overview").map((tab) => ( // Filter out "Q3 Financial Overview" from this map
+          {tabs.filter(tab => tab.id !== "overview").map((tab) => ( 
             <button
               key={tab.id}
               onClick={() => { setActiveTab(tab.name); console.log(`Tab selected: ${tab.name}`) }}
@@ -493,13 +492,13 @@ const SpreadsheetApp = () => {
         </div>
       </div>
 
-      {/* Spreadsheet */}
-      <div className="flex-1 overflow-auto relative"> {/* overflow-auto for scrollable content */}
-        <div className="bg-white min-w-max"> {/* min-w-max to prevent horizontal scroll issues */}
+    
+      <div className="flex-1 overflow-auto relative"> 
+        <div className="bg-white min-w-max"> 
           <table ref={tableRef} className="w-full border-collapse">
             <thead>
-              <tr className="bg-gray-50 border-b border-gray-200 sticky top-0 z-10"> {/* Sticky header for table */}
-                <th className="w-[48px] px-2 py-2 border-r border-gray-200 text-left bg-gray-50"> {/* Adjusted width */}
+              <tr className="bg-gray-50 border-b border-gray-200 sticky top-0 z-10"> 
+                <th className="w-[48px] px-2 py-2 border-r border-gray-200 text-left bg-gray-50"> 
                   <span className="text-xs font-medium text-gray-500">#</span>
                 </th>
                 {columns.map((column, index) => (
@@ -518,7 +517,7 @@ const SpreadsheetApp = () => {
                       >
                         {column.label}
                       </span>
-                      {sortConfig.key === column.key && ( // Show sort icon only if sorted by this column
+                      {sortConfig.key === column.key && ( 
                         <ChevronDown
                           className={`w-3 h-3 transition-transform duration-200 ${
                             sortConfig.direction === "desc" ? "rotate-180" : ""
@@ -553,7 +552,7 @@ const SpreadsheetApp = () => {
                     className={`w-[48px] px-2 py-2 border-r border-gray-200 bg-gray-50 sticky left-0 z-0 ${
                       selectedCell && selectedCell[0] === rowIndex && selectedCell[1] === 0 ? "ring-2 ring-blue-400 bg-blue-50 shadow-sm" : ""
                     }`}
-                    onClick={() => handleCellClick(rowIndex, 0)} // # column is visibleColIndex 0
+                    onClick={() => handleCellClick(rowIndex, 0)} 
                   >
                     <div className="flex items-center space-x-1">
                       <input
@@ -566,11 +565,11 @@ const SpreadsheetApp = () => {
                     </div>
                   </td>
                   {columns.map((column, colIndex) => renderCell(item, column, rowIndex, colIndex))}
-                  <td className="w-[48px] px-2 py-2 border-r border-gray-200 text-center"></td> {/* Empty cell for + column */}
-                  <td className="w-[48px] px-2 py-2 border-r border-gray-200 text-center"></td> {/* Empty cell for vertical dots column */}
+                  <td className="w-[48px] px-2 py-2 border-r border-gray-200 text-center"></td> 
+                  <td className="w-[48px] px-2 py-2 border-r border-gray-200 text-center"></td> 
                 </tr>
               ))}
-              {/* Empty rows for spreadsheet feel */}
+             
               {Array.from({ length: 10 }, (_, index) => {
                 const emptyRowIndex = data.length + index
                 return (
@@ -617,8 +616,8 @@ const SpreadsheetApp = () => {
                         </td>
                       )
                     })}
-                    <td className="w-[48px] px-2 py-2 border-r border-gray-200 text-center"></td> {/* Empty cell for + column */}
-                    <td className="w-[48px] px-2 py-2 border-r border-gray-200 text-center"></td> {/* Empty cell for vertical dots column */}
+                    <td className="w-[48px] px-2 py-2 border-r border-gray-200 text-center"></td> 
+                    <td className="w-[48px] px-2 py-2 border-r border-gray-200 text-center"></td> 
                   </tr>
                 )
               })}
